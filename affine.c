@@ -93,5 +93,10 @@ int affine(double       **  W,        /*  D+1 x  D          | Linear map        
     if(fabs(conv)<1e-8)break;
   }
 
+  W[0][3] = a[0];
+  W[1][3] = a[1];
+  W[2][3] = a[2];
+  W[3][3] = 1;
+
   return lp;
 }

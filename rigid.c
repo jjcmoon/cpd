@@ -57,7 +57,8 @@ int rigid(double       **  W,        /*  D+1 x  D          | Linear map         
   /* initialize */
   for(d=0;d<D;d++)for(i=0;i<D;i++) R[d][i]=d==i?1:0;
   for(m=0;m<M;m++)for(d=0;d<D;d++) T[m][d]=Y[m][d];
-  for(m=0;m<M;m++)for(n=0;n<N;n++) sgm2+=dist2(X[n],Y[m],D);sgm2/=M*N*D;
+  for(m=0;m<M;m++)for(n=0;n<N;n++) sgm2+=dist2(X[n],Y[m],D);
+  sgm2/=M*N*D;
 
   /* main computation */
   for(lp=0;lp<nlp;lp++){noise=(pow(2.0*M_PI*sgm2,0.5*D)*M*omg)/(N*(1-omg));
@@ -90,22 +91,50 @@ int rigid(double       **  W,        /*  D+1 x  D          | Linear map         
 
     /* compute scaling s and intercept a */
     c1=c2=0;
-    for(d=0;d<D;d++)for(i=0;i<D;i++)c1+=A[d+i*D]*R[d][i];
-    for(d=0;d<D;d++)for(m=0;m<M;m++)c2+=SQ(Yc[m][d])*P[m][N]; s=c1/c2;
+    for(d=0;d<D;d++)
+	for(i=0;i<D;i++)
+		c1+=A[d+i*D]*R[d][i];
+    for(d=0;d<D;d++)
+	for(m=0;m<M;m++)
+		c2+=SQ(Yc[m][d])*P[m][N]; 
+    s=c1/c2;
+
+    for(d=0;d<D;d++) {
+	val=0;
+	for(i=0;i<D;i++)
+		val += R[d][i]*mY[i];
+	a[d]=mX[d]-s*val;
+    }
 
     /* compute transformation T */
-    for(d=0;d<D;d++){val=0;for(i=0;i<D;i++)val+=R[d][i]*mY[i];a[d]=mX[d]-s*val;}
-    for(m=0;m<M;m++)for(d=0;d<D;d++){val=0;for(i=0;i<D;i++)val+=R[d][i]*Y[m][i];T[m][d]=s*val+a[d];}
+    for(m=0;m<M;m++)
+	for(d=0;d<D;d++){
+		val=0;
+		for(i=0;i<D;i++)
+			val+=R[d][i]*Y[m][i];
+		T[m][d]=s*val+a[d];
+    }
+    
 
     /* compute sgm2 (corresponds to residual) */
-    pres2=pres1;pres1=sgm2;sgm2=-s*c1;
-    for(n=0;n<N;n++)for(d=0;d<D;d++) sgm2+=SQ(Xc[n][d])*P[M][n]; sgm2/=P[M][N]*D;
+    pres2=pres1;
+    pres1=sgm2;
+    sgm2=-s*c1;
+    for(n=0;n<N;n++)
+	for(d=0;d<D;d++) 
+		sgm2+=SQ(Xc[n][d])*P[M][n]; 
+    sgm2/=P[M][N]*D;
 
     /* check convergence */
     conv=log(pres2)-log(sgm2 );
-    if(verb) printOptIndex('r',lp,P[M][N],sqrt(sgm2),noise,conv);
-    if(fabs(conv)<1e-8)break;
+
+    if(fabs(conv)<1e-8)
+	break;
   }
+  W[0][3] = a[0];
+  W[1][3] = a[1];
+  W[2][3] = a[2];
+  W[3][3] = 1;
 
   return lp;
 }

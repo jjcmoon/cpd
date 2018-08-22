@@ -123,8 +123,6 @@ int main(int argc, char **argv){
   files[2]=fprm;    size[2]=D; dz  =prms[5];
   files[3]=fout;
 
-  if(verb) printInfo((const char**)files,size,prms,flag);
-
   W = calloc2d(M,D);        A = calloc  (M*M,sd);
   T = calloc2d(M,D);        B = calloc  (M*M,sd);
   G = calloc2d(M,M);        C = calloc3d(4,N>M?N:M,D);
@@ -137,25 +135,16 @@ int main(int argc, char **argv){
 
   #define CD  (const double **)
   #define CD1 (const double * )
-  if(D==3) {asp[2]=dz;iasp[2]=1.0/dz;}
-  scalePoints(X,N,D,asp); normPoints(X,muX,&sgmX,N,D);
-  scalePoints(Y,M,D,asp); normPoints(Y,muY,&sgmY,M,D);
-  if(S0||S1||S2) write2d("normX.txt",CD X,N,D);
-  if(S0||S1||S2) write2d("normY.txt",CD Y,M,D);
+
 
   if(flag&1) {nlpr[0]=rigid (W,T,P,C,S0,CD X,CD Y,size,prms,verb); if(flag&6){Z=Y;Y=T;T=Z;}}
   if(flag&2) {nlpr[1]=affine(W,T,P,C,S1,CD X,CD Y,size,prms,verb); if(flag&4){Z=Y;Y=T;T=Z;}}
   if(flag&4) {nlpr[2]=cpd   (W,T,P,G,U,V,A,B,S2,CD X,CD Y,size,prms,verb);}
 
-  revertPoints(T,muX,&sgmX,M,D); scalePoints(T,M,D,iasp);
-  revertPoints(Y,muY,&sgmY,M,D); scalePoints(Y,M,D,iasp);
-  revertPoints(X,muX,&sgmX,N,D); scalePoints(X,N,D,iasp);
 
-  write2d(fout,CD T,M,D);
 
-  if(S0) printOptProcess("otw-r.bin",CD1 S0,nlpr[0],M,D);
-  if(S1) printOptProcess("otw-a.bin",CD1 S1,nlpr[1],M,D);
-  if(S2) printOptProcess("otw-c.bin",CD1 S2,nlpr[2],M,D);
+  write2d(fout,CD W,D+1,D+1);
+
 
   return 0;
 }
