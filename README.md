@@ -1,5 +1,5 @@
 
-# Coherent Point Drift
+# C Coherent Point Drift
 This software is a simple implementation of the point-set registration algorithm known as
 [Coherent Point Drift](https://en.wikipedia.org/wiki/Point_set_registration#Coherent_point_drift)   
 (CPD) invented by Andriy Myronenko and Xubo Song (2010). All of the source codes was written in C   
@@ -31,7 +31,7 @@ Coherent Point Drift, IEEE TPAMI, 32(12), 2262--2275, 2010.
   Use the character `r` for rigid registration, and `a` for affine registration. Support for Gaussian regularized non-rigid registration was provided in the original package, but not considered here.
 
   **INPUT**:    
-  `X`: point set 1, reference points.
+  `X`: point set 1, reference points.  
   `Y`: point set 2, floating points.  
 
   **OPTIONs**:   
@@ -41,7 +41,7 @@ Coherent Point Drift, IEEE TPAMI, 32(12), 2262--2275, 2010.
   `-o` output file name.  
   If the option `-v` with no argument is specified, the version information is printed.
 
-  **OUTPUT**
+  **OUTPUT**:   
   A file with given name is created (default `T.txt`), containing the solution by way of a homogenous transformation matrix.
 
   **EXAMPLE**:
